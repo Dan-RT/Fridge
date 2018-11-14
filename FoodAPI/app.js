@@ -6,6 +6,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var recipesRouter = require('./routes/recipes');
+var database = require('./public/javascripts/database');
 
 var app = express();
 
@@ -41,6 +42,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-console.log("Magic Happends on port 3000.")
+
+console.log("Magic Happends on port 3000.");
 
 module.exports = app;

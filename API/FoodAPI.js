@@ -5,7 +5,7 @@ export function getRecipesFromApiWithSearchedText (food) {
 
   return fetch(url).then((response) => response.text())
    .then((responseText) => {
-       console.log(JSON.parse(responseText));
+       console.log(responseText);
        return JSON.parse(responseText);
    })
    .catch((error) => {
@@ -25,10 +25,10 @@ export function getRecipesFromApibyId (id) {
   });
 }
 
-export function addNewIngredient() {
+export function postNewRecipe() {
   const url = 'http://10.0.2.2:3000/recipes/add'
 
-  console.log("addNewIngredient API call to : " + url);
+  console.log("_postNewRecipe API call to : " + url);
 
   return fetch(url, {
       method: 'POST',
@@ -48,4 +48,16 @@ export function addNewIngredient() {
       console.error(error);
     });
 
+}
+
+export function getDeleteRecipe() {
+  const url = 'http://10.0.2.2:3000/recipes/delete'
+
+  console.log("_postDeleteRecipe API call to : " + url);
+
+  return fetch(url).then(function(response){
+    return response.json();
+  }).catch(function(error) {
+    throw error;
+  });
 }

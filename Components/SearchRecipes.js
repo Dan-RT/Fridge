@@ -34,7 +34,7 @@ class SearchRecipe extends React.Component {
       }).catch(function(error) {
         console.log("API call failed");
         this.setState({
-          recipes: data.results,
+          recipes: data,
           isLoading: false,
           hasfailed: true
         })
@@ -81,7 +81,7 @@ class SearchRecipe extends React.Component {
         <Button style={{ height: 50 }} title='Search Food' onPress={() => this._loadRecipes()}/>
         <FlatList
           data={this.state.recipes}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item._id.toString()}
           renderItem={({item}) => <RecipeItem recipe={item} displayDetailForRecipe={this._displayDetailForRecipe} />}
           onEndReachedThreshold={0.5}
         />

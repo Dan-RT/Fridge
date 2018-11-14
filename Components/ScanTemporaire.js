@@ -1,27 +1,41 @@
 import React from 'react'
 import { StyleSheet, View, TextInput, Button, Text, TouchableOpacity } from 'react-native'
-import { addNewIngredient } from '../API/FoodAPI'
+import { postNewRecipe, getDeleteRecipe } from '../API/FoodAPI'
 
 class ScanTemporaire extends React.Component {
 
-  _postNewIngredient(){
-    addNewIngredient().then(() => {
-      console.log("addNewIngredient API call success");
+  _postNewRecipe(){
+    postNewRecipe().then(() => {
+      console.log("_postNewRecipe API call success");
     }).catch(function(error) {
-      console.log("addNewIngredient API call failed");
+      console.log("_postNewRecipe API call failed");
+      console.log(error);
+    });
+  }
+
+  _getDeleteRecipe(){
+    getDeleteRecipe().then(() => {
+      console.log("_postNewRecipe API call success");
+    }).catch(function(error) {
+      console.log("_postNewRecipe API call failed");
       console.log(error);
     });
   }
 
     render() {
         return (
-          <TouchableOpacity style={styles.main_container} onPress={() => this._postNewIngredient()}>
-            <View style={styles.content_container}>
+          <View style={styles.main_container}>
+            <TouchableOpacity style={styles.content_container} onPress={() => this._postNewRecipe()}>
               <View style={styles.header_container}>
-                <Text style={styles.title_text}>TEST SCAN</Text>
+                <Text style={styles.title_text}>INSERT RECIPES</Text>
               </View>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.content_container} onPress={() => this._getDeleteRecipe()}>
+              <View style={styles.header_container}>
+                <Text style={styles.title_text}>DELETE RECIPES</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         )
     }
 }

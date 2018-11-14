@@ -1,7 +1,5 @@
-
 class recipe {
-  constructor (id, name, ingredients, keywords, description) {
-    this.id = id
+  constructor (name, ingredients, keywords, description) {
   	this.name = name;
     this.ingredients = ingredients; //array of ingredients
     this.keywords = keywords;
@@ -21,22 +19,18 @@ class recipe {
   }
 
   matchKeyword(word) {
-    if (this.keywords.includes(word)) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.keywords.includes(word);
   }
 
   toJSON () {
     return {
-      'id': this.id,
       'name': this.name,
       'ingredients': this.ingredients,
       'keywords': this.keywords,
       'description': this.description
     };
   }
+
 }
 
 module.exports = recipe;

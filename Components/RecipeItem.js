@@ -6,7 +6,7 @@ class RecipeItem extends React.Component {
   render() {
     const { recipe, displayDetailForRecipe } = this.props
     return (
-      <TouchableOpacity style={styles.main_container} onPress={() => displayDetailForRecipe(recipe.id)}>
+      <TouchableOpacity style={styles.main_container} onPress={() => displayDetailForRecipe(recipe._id)}>
         <View style={styles.content_container}>
           <View style={styles.header_container}>
             <Text style={styles.title_text}>{recipe.name}</Text>
