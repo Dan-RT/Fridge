@@ -5,40 +5,34 @@ const ingredient = require('../public/javascripts/models/ingredient.js');
 const recipe = require('../public/javascripts/models/recipe.js');
 
 const RecipeModel = require('../public/javascripts/mongoose/RecipeSchema');
-
-const listIngredients = [];
-
-listIngredients.push(new ingredient("Tomato Sauce", "plat", "lunch", "100", 1, ["tomato", "sauce", "bolognaise", "provençale"]));
-listIngredients.push(new ingredient("Pesto Sauce", "plat", "lunch", "100", 1, ["sauce", "pesto"]));
-listIngredients.push(new ingredient("Pasta", "plat", "lunch", "100", 1, ["pasta", "pates", "pâtes", "spaghetti", "torti"]));
-
+const IngredientModel = require('../public/javascripts/mongoose/IngredientSchema');
 
 const listRecipes = [];
 
 listRecipes.push(new recipe("Pâtes Bolo",
 								[
-									listIngredients[0],
-									listIngredients[2]
-								], [], "test description"
+									"5becd03653760912cc84fcbd",
+									"5becd05cae953512d692e9a9"
+								], ["test", "tomato", "pates"], "test description"
 							)
 				);
 
 listRecipes.push(new recipe("Pâtes Pesto",
 								[
-									listIngredients[1],
-									listIngredients[2]
-								], [], "test description"
+									"5becd04a50aa2512d28bb55f",
+									"5becd05cae953512d692e9a9"
+								], ["test", "tomato", "pates"], "test description"
 							)
 				);
 listRecipes.push(new recipe("Soupe de tomate",
 								[
-									listIngredients[0]
+									"5becd03653760912cc84fcbd"
 								], ["soupe", "soup"],  "test description"
 							)
-);
+                );
 
 
-router.get('/search/:keyword', function (req, res) {
+router.get('/search/keyword/:keyword', function (req, res) {
  	console.log("GET Request : keyword: " + req.params.keyword);
 
  	var keyword_ = req.params.keyword;
@@ -56,48 +50,96 @@ router.get('/search/:keyword', function (req, res) {
     });
 });
 
-router.get('/recipe/id/:id_recipe', function (req, res) {
+router.get('/search/id/:id', function (req, res) {
+    console.log("GET Request : keyword: " + req.params.id);
 
-    listRecipes.forEach(function(item) {
-    	if (item.id === req.params.id_recipe) {
-    		res.send(item)
-		}
-	});
-  	res.send("{}");
+    var id = req.params.id;
+
+    RecipeModel.findById(id).then(doc => {
+        console.log("\nDOCUMENT FOUND");
+        console.log(doc);
+        console.log("\n");
+        res.send(doc);
+    }).catch(err => {
+        console.error(err);
+        res.send("{}");
+    });
 });
 
 
-router.post('/add', function(req, res) {
-    var result = JSON.stringify(req.body);
+function asyncLoop(i, ingredientArray, keywordsIngredients, callback) {
+    if(i < ingredientArray.length) {
+        console.log(i);
 
-    console.log("\nPOST request: ");
-    console.log(result);
+        IngredientModel.findById(ingredientArray[i]).then(doc => {
+            console.log("\nINGREDIENT FOUND");
+            console.log("\nKeyword current ingredients:");
 
-    let recipeToAdd = new RecipeModel({
-        name: listRecipes[2].name,
-        ingredients: listRecipes[2].ingredients,
-        keywords: listRecipes[2].keywords,
-        description: listRecipes[2].description
-    });
+            var keywordsTmp = doc.toObject().keywords;
+            console.log(keywordsTmp);
 
-    recipeToAdd.save()
-        .then(doc => {
-            console.log("\nINSERTION SUCCESSED");
-            console.log(doc);
-            console.log("\n");
-            res.send("{}");
+            if (keywordsIngredients.length === 0) {
+                keywordsIngredients = keywordsTmp.slice();
+            } else {
+                keywordsIngredients = keywordsIngredients.concat(keywordsTmp);
+            }
+
+            console.log("\nKeyword total:");
+            console.log(keywordsIngredients);
+
+            asyncLoop(i+1, ingredientArray, keywordsIngredients, callback);
         }).catch(err => {
             console.error(err);
-            res.send("{}");
         });
+
+    } else {
+        callback(keywordsIngredients);
+    }
+}
+
+router.post('/add', function(req, res) {
+    // Source : https://stackoverflow.com/questions/21829789/node-mongoose-find-query-in-loop-not-working/21830088
+
+    var result = JSON.stringify(req.body);
+
+    console.log(listRecipes[0]);
+    console.log("\nPOST request: ");
+    //console.log(result);
+
+    var keywordsIngredients = [];
+
+    asyncLoop(0, listRecipes[0].ingredients, keywordsIngredients, function(keywordsIngredients) {
+        //code that should happen after the loop
+
+        console.log("\nKeywords of the new Recipe:");
+        console.log(keywordsIngredients);
+
+        let recipeToAdd = new RecipeModel({
+            name: listRecipes[0].name,
+            ingredients: listRecipes[0].ingredients,
+            keywords: keywordsIngredients,
+            description: listRecipes[0].description
+        });
+
+        recipeToAdd.save()
+            .then(doc => {
+                console.log("\nINSERTION SUCCESSED");
+                console.log(doc);
+                console.log("\n");
+                res.send(doc);
+            }).catch(err => {
+            console.error(err);
+            res.send("{error:true}");
+        });
+    });
 
 });
 
-router.get('/delete', function(req, res) {
 
+router.get('/delete/id/:id', function(req, res) {
     RecipeModel
         .findOneAndRemove({
-            keywords: 'pates'
+            _id: req.params.id
         }).then(response => {
             console.log("\nDOCUMENT DELETED");
             console.log("\n");
@@ -109,6 +151,36 @@ router.get('/delete', function(req, res) {
 
 });
 
+
+router.post('/modify/', function(req, res) {
+
+    console.log("\nPOST request: ");
+    console.log(result);
+
+    RecipeModel
+        .findOneAndUpdate(
+            {
+                _id: req.body._id                // search query
+            },
+            {
+                name: req.body.name,
+                ingredients: req.body.ingredients,
+                keywords: req.body.keywords,
+                description: req.body.description
+            },
+            {
+                new: true,                       // return updated doc
+                runValidators: true              // validate before update
+            })
+        .then(doc => {
+            console.log(doc);
+            res.send(doc);
+        })
+        .catch(err => {
+            console.error(err);
+            res.send("{}");
+        });
+});
 
 module.exports = router;
 

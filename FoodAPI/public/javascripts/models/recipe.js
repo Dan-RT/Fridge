@@ -1,10 +1,10 @@
 class recipe {
-  constructor (name, ingredients, keywords, description) {
+
+  constructor (name, ingredientsID, keywords, description) {
   	this.name = name;
-    this.ingredients = ingredients; //array of ingredients
+    this.ingredients = ingredientsID;
     this.keywords = keywords;
     this.description = description;
-    this._generateKeywords()
   }
 
   _generateKeywords() {
@@ -16,6 +16,11 @@ class recipe {
       })
     });
 
+  }
+
+  addIngredients(ingredientID) {
+    this.ingredients.push(ingredientID);
+    //Do Stuffs with keywords
   }
 
   matchKeyword(word) {
@@ -34,4 +39,3 @@ class recipe {
 }
 
 module.exports = recipe;
-
