@@ -135,22 +135,17 @@ router.post('/add', function(req, res) {
 
 });
 
-
 router.get('/delete/id/:id', function(req, res) {
     RecipeModel
-        .findOneAndRemove({
-            _id: req.params.id
-        }).then(response => {
+        .findById(req.params.id).then(response => {
             console.log("\nDOCUMENT DELETED");
             console.log("\n");
             res.send(response);
         }).catch(err => {
-            console.error(err)
+            console.error(err);
             res.send("{}");
         });
-
 });
-
 
 router.post('/modify/', function(req, res) {
 
