@@ -3,7 +3,7 @@ const router = express.Router();
 
 const user = require('../public/javascripts/models/user.js');
 const UserModel = require('../public/javascripts/mongoose/UserSchema');
-
+const FridgeListModel = require('../public/javascripts/mongoose/FridgeListSchema');
 
 router.get('/create/name/:name', function(req, res) {
     console.log("GET create User: " + req.params.name);
@@ -95,16 +95,27 @@ router.get('/delete/name/:name', function(req, res) {
     });
 });
 
-router.get('/delete/id/:id', function(req, res) {
+router.get('/delete/token/:token', function(req, res) {
 
-    console.log("GET delete User: " + req.params.id);
+    console.log("GET delete User: " + req.params.token);
 
     UserModel
         .findOneAndRemove({
-            _id: req.params.id
+            token: req.params.token
         }).then(response => {
         console.log("\nUSER DELETED");
         console.log("\n");
+
+        FridgeListModel
+            .findOneAndRemove({
+                tokenUser: req.params.token
+            }).then(doc => {
+            console.log("\nFRIDGE DELETED");
+            console.log(doc);
+        }).catch(err => {
+            //console.error(err);
+        });
+
         res.send(response);
     }).catch(err => {
         console.error(err);
