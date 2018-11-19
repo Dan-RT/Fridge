@@ -6,12 +6,101 @@ const Recipe = require('../public/javascripts/models/recipe.js');
 
 const RecipeModel = require('../public/javascripts/mongoose/RecipeSchema');
 const IngredientModel = require('../public/javascripts/mongoose/IngredientSchema');
+const UserModel = require('../public/javascripts/mongoose/UserSchema');
+const UserIngredientsModel = require('../public/javascripts/mongoose/UserIngredientsSchema');
 
 
 const listIngredients = [];
 listIngredients.push(new Ingredient("Tomato Sauce", "plat", "lunch", "100", 1, ["tomato", "sauce", "bolognaise", "provençale"]));
 listIngredients.push(new Ingredient("Pesto Sauce", "plat", "lunch", "100", 1, ["sauce", "pesto"]));
 listIngredients.push(new Ingredient("Pasta", "plat", "lunch", "100", 1, ["pasta", "pates", "pâtes", "spaghetti", "torti"]));
+
+
+userIngredientListDoesExist = function (token) {
+
+};
+
+insertIngredient = function (res, token) {
+    let ingredientToAdd = new IngredientModel({
+        name: listIngredients[0].name,
+        typeDish: listIngredients[0].typeDish,
+        typeMeal: listIngredients[0].typeMeal,
+        weight: listIngredients[0].weight,
+        quantity: listIngredients[0].quantity,
+        keywords: listIngredients[0].keywords
+    });
+
+    ingredientToAdd.save()
+        .then(doc => {
+            console.log("\nINGREDIENT INSERTION SUCCESSED");
+            console.log(doc);
+
+            var id = doc.toObject()._id;
+            insertToUserIngredientList(res, token, id);
+        }).catch(err => {
+        console.error(err);
+        res.send("{error:true}");
+    });
+};
+
+insertToUserIngredientList = function (token, idIngredientToAdd) {
+
+    UserIngredientsModel.find({
+        tokenUser: token
+    }).then(doc => {
+
+        if (!doc.length === 0) {
+            //Si la liste existe
+
+            console.log("\nLIST FOUND");
+            console.log(doc);
+
+            var list = doc[0].toObject();
+            list.ingredients.push(idIngredientToAdd);
+
+            UserIngredientsModel
+                .findOneAndUpdate(
+                    {
+                        _id: list._id
+                    },
+                    {
+                        ingredients: list.ingredients
+                    },
+                    {
+                        new: true,
+                        runValidators: true
+                    })
+                .then(doc => {
+                    console.log(doc);
+                    console.log("\nINGREDIENT LIST UPDATED");
+                }).catch(err => {
+                    console.error(err);
+                });
+
+        }
+        else {
+            //Sinon on crée la liste
+
+            var ingredientTmp = [idIngredientToAdd];
+
+            let UserIngredientListToAdd = new UserIngredientsModel({
+                tokenUser: token,
+                ingredients: ingredientTmp
+            });
+
+            UserIngredientListToAdd.save()
+                .then(doc => {
+                    console.log("\nINGREDIENT LIST CREATION SUCCESSED");
+                    console.log(doc);
+                    res.send(doc);
+                }).catch(err => {
+                console.error(err);
+            });
+        }
+    }).catch(err => {
+        console.error(err);
+    });
+};
 
 
 router.get('/search/keyword/:keyword', function (req, res) {
@@ -32,7 +121,6 @@ router.get('/search/keyword/:keyword', function (req, res) {
     });
 });
 
-
 router.get('/search/id/:id', function (req, res) {
     console.log("GET Request : keyword: " + req.params.id);
 
@@ -51,37 +139,34 @@ router.get('/search/id/:id', function (req, res) {
     });
 });
 
-
-router.post('/add', function(req, res) {
-    /*var result = JSON.stringify(req.body);
+router.post('/add/:token', function(req, res) {
+    //var result = JSON.stringify(req.body);
 
     console.log("\nPOST request: ");
-    console.log(result);
+    var token = req.params.token;
+    console.log("\ntoken: " + token);
+    //console.log(result);
 
-    let ingredientToAdd = new IngredientModel({
-        name: listIngredients[2].name,
-        typeDish: listIngredients[2].typeDish,
-        typeMeal: listIngredients[2].typeMeal,
-        weight: listIngredients[2].weight,
-        quantity: listIngredients[2].quantity,
-        keywords: listIngredients[2].keywords
-    });
+    UserModel.find({
+        token: token
+    }).then(doc => {
+        //Si on a un token valid
 
-    ingredientToAdd.save()
-        .then(doc => {
-            console.log("\nINSERTION SUCCESSED");
+        if (doc.length === 0) {
+            throw Error('USER NOT AUTHORIZED');
+        } else {
+            console.log("\nUSER AUTHORIZED FOUND");
             console.log(doc);
-            console.log("\n");
-            res.send("{}");
-        }).catch(err => {
-        console.error(err);
-        res.send("{}");
-    });*/
-    res.send("200");
+            insertIngredient(res, token);
+        }
+    }).catch(err => {
+        console.log("\nUSER NOT AUTHORIZED");
+        //console.error(err);
+        res.send("{notAuthorized:true}");
+    });
 });
 
-
-router.get('/delete/:id', function(req, res) {
+router.get('/delete/id/:id', function(req, res) {
 
     IngredientModel
         .findOneAndRemove({
@@ -96,7 +181,6 @@ router.get('/delete/:id', function(req, res) {
     });
 
 });
-
 
 router.post('/modify/', function(req, res) {
 
@@ -130,9 +214,6 @@ router.post('/modify/', function(req, res) {
         });
 });
 
-
-
-
-
-
 module.exports = router;
+
+

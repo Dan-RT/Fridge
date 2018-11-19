@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 const user = require('../public/javascripts/models/user.js');
-
 const UserModel = require('../public/javascripts/mongoose/UserSchema');
 
 
@@ -13,7 +12,8 @@ router.get('/create/name/:name', function(req, res) {
 
     let userToAdd = new UserModel({
         name: newUser.name,
-        token: newUser.token
+        token: newUser.token,
+        ingredients: []
     });
 
     userToAdd.save()
@@ -26,7 +26,6 @@ router.get('/create/name/:name', function(req, res) {
         console.error(err);
         res.send("{error:true}");
     });
-
 });
 
 router.get('/search/name/:name', function (req, res) {
@@ -36,7 +35,7 @@ router.get('/search/name/:name', function (req, res) {
     UserModel.find({
         name: req.params.name
     }).then(doc => {
-        console.log("\nUSER FOUND");
+        console.log("\nUSER FOUND BY NAME");
         console.log(doc);
         console.log("\n");
         res.send(doc);
@@ -51,7 +50,7 @@ router.get('/search/id/:id', function(req, res) {
     console.log("GET search User: " + req.params.id);
 
     UserModel.findById(req.params.id).then(doc => {
-        console.log("\nUSER FOUND");
+        console.log("\nUSER FOUND BY ID");
         console.log(doc);
         console.log("\n");
         res.send(doc);
@@ -60,6 +59,23 @@ router.get('/search/id/:id', function(req, res) {
         res.send("{error:true}");
     });
 
+});
+
+router.get('/search/token/:token', function (req, res) {
+
+    console.log("GET search User: " + req.params.token);
+
+    UserModel.find({
+        token: req.params.token
+    }).then(doc => {
+        console.log("\nUSER FOUND BY TOKEN");
+        console.log(doc);
+        console.log("\n");
+        res.send(doc);
+    }).catch(err => {
+        console.error(err);
+        res.send("{error:true}");
+    });
 });
 
 router.get('/delete/name/:name', function(req, res) {
@@ -96,7 +112,4 @@ router.get('/delete/id/:id', function(req, res) {
     });
 });
 
-
 module.exports = router;
-
-
