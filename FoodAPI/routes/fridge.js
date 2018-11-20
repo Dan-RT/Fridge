@@ -329,4 +329,55 @@ router.get('/remove/groceries/id/:id/token/:token', function(req, res) {
     });
 });
 
+function asyncLoop(i, ingredientIds, ingredientArray, callback) {
+    if(i < ingredientIds.length) {
+        console.log(i);
+
+        IngredientModel.findById(ingredientIds[i]).then(doc => {
+            console.log("\nINGREDIENT FOUND");
+            console.log(doc);
+
+            ingredientArray.push(doc.toObject());
+
+            asyncLoop(i+1, ingredientIds, ingredientArray, callback);
+        }).catch(err => {
+            console.error(err);
+        });
+
+    } else {
+        callback(ingredientArray);
+    }
+}
+
+router.get('/fetchAllFridge/token/:token', function(req, res) {
+
+    console.log("\nGET request: ");
+    var token = req.params.token;
+    console.log("\ntoken: " + token);
+
+    authentification(res, token, function () {
+        FridgeListModel.find({
+            tokenUser: token
+        }).then(doc => {
+            if (doc.length > 0) {
+                console.log("\nFRIDGE LIST FOUND");
+
+                var fridge = doc[0].toObject();
+                var ingredientArray = [];
+
+                asyncLoop(0, fridge.ingredients, ingredientArray, function (ingredientArray) {
+                    console.log(ingredientArray);
+                    res.send(ingredientArray);
+                });
+
+            } else {
+                console.log("\nFRIDGE LIST NOT FOUND");
+                res.send("{listNotFound:true}");
+            }
+        }).catch(err => {
+            console.error(err);
+        });
+    });
+});
+
 module.exports = router;
