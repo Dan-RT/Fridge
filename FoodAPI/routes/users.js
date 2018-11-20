@@ -12,8 +12,7 @@ router.get('/create/name/:name', function(req, res) {
 
     let userToAdd = new UserModel({
         name: newUser.name,
-        token: newUser.token,
-        ingredients: []
+        token: newUser.token
     });
 
     userToAdd.save()
@@ -38,7 +37,7 @@ router.get('/search/name/:name', function (req, res) {
         console.log("\nUSER FOUND BY NAME");
         console.log(doc);
         console.log("\n");
-        res.send(doc);
+        res.send(doc[0]);
     }).catch(err => {
         console.error(err);
         res.send("{error:true}");
@@ -69,9 +68,9 @@ router.get('/search/token/:token', function (req, res) {
         token: req.params.token
     }).then(doc => {
         console.log("\nUSER FOUND BY TOKEN");
-        console.log(doc);
+        console.log(doc[0]);
         console.log("\n");
-        res.send(doc);
+        res.send(doc[0]);
     }).catch(err => {
         console.error(err);
         res.send("{error:true}");
@@ -85,10 +84,10 @@ router.get('/delete/name/:name', function(req, res) {
     UserModel
         .findOneAndRemove({
             name: req.params.name
-        }).then(response => {
+        }).then(doc => {
         console.log("\nUSER DELETED");
-        console.log("\n");
-        res.send(response);
+        console.log(doc);
+        res.send(doc);
     }).catch(err => {
         console.error(err);
         res.send("{error:true}");

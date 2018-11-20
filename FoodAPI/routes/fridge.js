@@ -96,7 +96,28 @@ authentification = function (res, token, callback) {
     });
 };
 
-router.post('/add/token/:token', function(req, res) {
+function asyncLoop(i, ingredientIds, ingredientArray, callback) {
+    if(i < ingredientIds.length) {
+        console.log(i);
+
+        IngredientModel.findById(ingredientIds[i]).then(doc => {
+            console.log("\nINGREDIENT FOUND");
+            console.log(doc);
+
+            ingredientArray.push(doc.toObject());
+
+            asyncLoop(i+1, ingredientIds, ingredientArray, callback);
+        }).catch(err => {
+            console.error(err);
+        });
+
+    } else {
+        callback(ingredientArray);
+    }
+}
+
+
+router.post('/ingredient/add/token/:token', function(req, res) {
 
     console.log("\nPOST request: ");
     var token = req.params.token;
@@ -140,8 +161,8 @@ router.get('/search/token/:token', function(req, res) {
         }).then(doc => {
             if (doc.length > 0) {
                 console.log("\nFRIDGE LIST FOUND");
-                console.log(doc);
-                res.send(doc);
+                console.log(doc[0]);
+                res.send(doc[0]);
             } else {
                 console.log("\nFRIDGE LIST NOT FOUND");
                 res.send("{listNotFound:true}");
@@ -152,7 +173,7 @@ router.get('/search/token/:token', function(req, res) {
     });
 });
 
-router.get('/remove/id/:id/groceries/:groceries/token/:token', function(req, res) {
+router.get('/ingredient/remove/id/:id/groceries/:groceries/token/:token', function(req, res) {
 
     console.log("\nGET request: ");
     var token = req.params.token;
@@ -209,7 +230,12 @@ router.get('/remove/id/:id/groceries/:groceries/token/:token', function(req, res
                         .then(doc => {
                             console.log(doc);
                             console.log("\nFRIDGE LIST UPDATED");
-                            res.send(doc);
+
+                            var ingredientArray = [];
+                            asyncLoop(0, doc.ingredients, ingredientArray, function (ingredientArray) {
+                                res.send(ingredientArray);
+                            });
+
                         }).catch(err => {
                         console.error(err);
                     });
@@ -240,30 +266,6 @@ router.get('/delete/token/:token', function(req, res) {
         res.send("{}");
     });
 
-});
-
-router.get('/search/groceries/token/:token', function(req, res) {
-
-    console.log("\nGET request: ");
-    var token = req.params.token;
-    console.log("\ntoken: " + token);
-
-    authentification(res, token, function () {
-        FridgeListModel.find({
-            tokenUser: token
-        }).then(doc => {
-            if (doc.length > 0) {
-                console.log("\nFRIDGE LIST FOUND");
-                console.log(doc);
-                res.send(doc.groceries);
-            } else {
-                console.log("\nFRIDGE LIST NOT FOUND");
-                res.send("{listNotFound:true}");
-            }
-        }).catch(err => {
-            console.error(err);
-        });
-    });
 });
 
 router.get('/remove/groceries/id/:id/token/:token', function(req, res) {
@@ -311,7 +313,11 @@ router.get('/remove/groceries/id/:id/token/:token', function(req, res) {
                         .then(doc => {
                             console.log(doc);
                             console.log("\nGROCERY LIST UPDATED");
-                            res.send(doc);
+                            var ingredientArray = [];
+                            asyncLoop(0, doc.groceries, ingredientArray, function (ingredientArray) {
+                                res.send(ingredientArray);
+                            });
+
                         }).catch(err => {
                         console.error(err);
                     });
@@ -329,25 +335,35 @@ router.get('/remove/groceries/id/:id/token/:token', function(req, res) {
     });
 });
 
-function asyncLoop(i, ingredientIds, ingredientArray, callback) {
-    if(i < ingredientIds.length) {
-        console.log(i);
+router.get('/search/groceries/token/:token', function(req, res) {
 
-        IngredientModel.findById(ingredientIds[i]).then(doc => {
-            console.log("\nINGREDIENT FOUND");
-            console.log(doc);
+    console.log("\nGET request: ");
+    var token = req.params.token;
+    console.log("\ntoken: " + token);
 
-            ingredientArray.push(doc.toObject());
+    authentification(res, token, function () {
+        FridgeListModel.find({
+            tokenUser: token
+        }).then(doc => {
+            if (doc.length > 0) {
+                console.log("\nFRIDGE LIST FOUND");
+                console.log(doc);
 
-            asyncLoop(i+1, ingredientIds, ingredientArray, callback);
+                var ingredientArray = [];
+                asyncLoop(0, doc.groceries, ingredientArray, function (ingredientArray) {
+                    console.log(ingredientArray);
+                    res.send(ingredientArray);
+                });
+
+            } else {
+                console.log("\nFRIDGE LIST NOT FOUND");
+                res.send("{listNotFound:true}");
+            }
         }).catch(err => {
             console.error(err);
         });
-
-    } else {
-        callback(ingredientArray);
-    }
-}
+    });
+});
 
 router.get('/fetchAllFridge/token/:token', function(req, res) {
 
