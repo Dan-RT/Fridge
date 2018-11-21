@@ -31,7 +31,9 @@ class HomePage extends React.Component {
     }
 
     _AddIngredient(){
-      console.log(this.newIngredientText)
+      console.log(this.newIngredientText);
+      this.newIngredientText = ""
+      this.setState({ visible: false })
     }
 
     _displayDetailForFilm = (idFilm) => {
@@ -69,10 +71,10 @@ class HomePage extends React.Component {
           style={styles.textinput}
           placeholder='Ingredient name'
           onChangeText={(text) => this._newIngredientTextInputChanged(text)}
-          onSubmitEditing={() => this._AddIngredient()}
+          onSubmitEditing={() => this._AddIngredient() }
 
         />
-        <Button style={{ height: 50 }} title='Summit ingredient' onPress={() => _AddIngredient()}/>
+        <Button style={{ height: 50 }} title='Summit ingredient' onPress={() => this._AddIngredient()}/>
       </View>
    </DialogContent>
        </Dialog>
