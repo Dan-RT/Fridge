@@ -4,8 +4,9 @@ import React from 'react'
 import { StyleSheet, View, Text, FlatList, Button, TouchableOpacity, Image, TextInput } from 'react-native'
 import { getFilmsFromApiWithSearchedText } from '../API/TMDBApi' // import { } from ... car c'est un export nommé dans TMDBApi.js
 import films from '../Helpers/filmsData'
-import FilmItem from './FilmItem'
-import Dialog, { DialogContent } from 'react-native-popup-dialog';
+import IngredientItem from './IngredientItem'
+import { getFridgeFromApi, postIngredientToApi } from '../API/FoodAPI'
+import Dialog from "react-native-dialog";
 
 class HomePage extends React.Component {
 
@@ -13,32 +14,49 @@ class HomePage extends React.Component {
       super(props)
       this.newIngredientText = ""
       this.state = {
-        films: [],
+        fridge: [],
+        visible: false
       }
-      // Ici on va créer les propriétés de notre component custom Search
     }
+
 
     _newIngredientTextInputChanged(text) {
       this.newIngredientText = text
     }
 
+
   _loadFridge() {
-      getFilmsFromApiWithSearchedText("Harry").then(data => {
+      getFridgeFromApi("1594276916").then(data => {
           this.setState({
-            films: data.results
-          })
-      })
+            fridge: data.results
+          });
+
+      });
+    
     }
 
-    _AddIngredient(){
+    _AddIngredient = () => {
       console.log(this.newIngredientText);
-      this.newIngredientText = ""
+      this.newIngredientText = "";
+      postIngredientToApi("1594276916");
       this.setState({ visible: false })
     }
 
-    _displayDetailForFilm = (idFilm) => {
+    showDialog = () => {
+  this.setState({ visible: true });
+};
+
+handleCancel = () => {
+this.setState({ visible: false });
+};
+
+
+
+    _displayIngredients = (token) => {
+
       this.props.navigation.navigate("FilmDetail",  { idFilm: idFilm })
     }
+
   render() {
     this._loadFridge()
     const { navigate } = this.props.navigation;
@@ -47,38 +65,31 @@ class HomePage extends React.Component {
       <View style={styles.main_container}>
         <View style={styles.fridge_container}>
           <FlatList
-            data={this.state.films}
+            data={this.state.fridge}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({item}) => <FilmItem film={item} displayDetailForFilm={this._displayDetailForFilm} />}
+            renderItem={({item}) => <IngredientItem ingredient={item} />}
             />
+
             <View style={styles.add_icon}>
-            <TouchableOpacity  onPress={() => {this.setState({ visible: true });}}>
+            <TouchableOpacity  onPress= {this.showDialog}>
 
             <Image
               style={styles.image}
               source={require( '../Image/icon_add.png')}
             />
             </TouchableOpacity>
-            <Dialog
-        visible={this.state.visible}
-          onTouchOutside={() => {
-          this.setState({ visible: false });
-        }}
-      >
-      <DialogContent style = {styles.dialog_Content}>
-      <View style={{margin: 30}}>
-        <TextInput
-          style={styles.textinput}
+            <Dialog.Container visible={this.state.visible}>
+              <Dialog.Title>Add to Fridge</Dialog.Title>
+                <Dialog.Description>
+                  Do you want to delete this account? You cannot undo this action.
+                  </Dialog.Description>
+                  <Dialog.Input
           placeholder='Ingredient name'
           onChangeText={(text) => this._newIngredientTextInputChanged(text)}
-          onSubmitEditing={() => this._AddIngredient() }
-
-        />
-        <Button style={{ height: 50 }} title='Summit ingredient' onPress={() => this._AddIngredient()}/>
-      </View>
-   </DialogContent>
-       </Dialog>
-
+          onSubmitEditing={() => this._AddIngredient() }/>
+                <Dialog.Button label="Cancel" onPress={this.handleCancel} />
+                <Dialog.Button label="Add" onPress={this._AddIngredient} />
+            </Dialog.Container>
 
             </View>
         </View>

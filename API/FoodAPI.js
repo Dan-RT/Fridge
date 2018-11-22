@@ -13,6 +13,43 @@ export function getRecipesFromApiWithSearchedText (food) {
   });
 }
 
+export function getFridgeFromApi (token) {
+  const url = 'http://10.0.2.2:3000/fridge/fetchAllFridge/token/' + token
+
+  console.log("getFridgeFromApi API call to : " + url);
+
+  f =  fetch(url).then(function(response){
+    return response.json();
+  }).catch(function(error) {
+    throw error;
+  });
+
+  console.log(f);
+  return f;
+
+}
+
+export function postIngredientToApi (token) {
+  const url = 'http://10.0.2.2:3000/fridge/ingredient/add/token/' + token
+
+  console.log("postIngredientToApi API call to : " + url);
+  return fetch(url, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        firstParam: 'yourValue',
+        secondParam: 'yourOtherValue',
+      }),
+    }).then(function(response){
+    return response.json();
+  }).catch(function(error) {
+    throw error;
+  });
+}
+
 export function getRecipesFromApibyId (id) {
   const url = 'http://10.0.2.2:3000/recipes/search/id/' + id
 
