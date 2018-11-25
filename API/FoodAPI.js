@@ -18,14 +18,14 @@ export function getFridgeFromApi (token) {
 
   console.log("getFridgeFromApi API call to : " + url);
 
-  f =  fetch(url).then(function(response){
-    return response.json();
-  }).catch(function(error) {
-    throw error;
+  return fetch(url).then((response) => response.text())
+   .then((responseText) => {
+       console.log(responseText);
+       return JSON.parse(responseText);
+   })
+   .catch((error) => {
+       console.log("reset client error-------",error);
   });
-
-  console.log(f);
-  return f;
 
 }
 

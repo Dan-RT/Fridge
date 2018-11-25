@@ -1,21 +1,29 @@
 // Components/FilmDetail.js
 
 import React from 'react'
-import { StyleSheet, View, Text, FlatList, Button, TouchableOpacity, Image, TextInput } from 'react-native'
+import { StyleSheet, View, Text, FlatList, Button, TouchableOpacity, Image, TextInput, Dimensions  } from 'react-native'
 import { getFilmsFromApiWithSearchedText } from '../API/TMDBApi' // import { } from ... car c'est un export nommé dans TMDBApi.js
 import films from '../Helpers/filmsData'
 import IngredientItem from './IngredientItem'
 import { getFridgeFromApi, postIngredientToApi } from '../API/FoodAPI'
 import Dialog from "react-native-dialog";
+import d from "../testJson/test.json";
+import { TabView, TabBar, SceneMap,PagerPan } from 'react-native-tab-view'
 
 class HomePage extends React.Component {
 
   constructor(props) {
       super(props)
       this.newIngredientText = ""
+      this.fridge = d
       this.state = {
-        fridge: [],
-        visible: false
+        //fridge: [],
+        visible: false,
+        index: 0,
+        routes: [
+          { key: 'first', title: 'Your fridge' },
+          { key: 'second', title: 'Your shop list' },
+        ]
       }
     }
 
@@ -26,13 +34,15 @@ class HomePage extends React.Component {
 
 
   _loadFridge() {
-      getFridgeFromApi("1594276916").then(data => {
+      /*getFridgeFromApi("1594276916").then(data => {
           this.setState({
             fridge: data.results
           });
 
-      });
-    
+      });*/
+
+
+
     }
 
     _AddIngredient = () => {
@@ -50,51 +60,59 @@ handleCancel = () => {
 this.setState({ visible: false });
 };
 
-
-
-    _displayIngredients = (token) => {
-
-      this.props.navigation.navigate("FilmDetail",  { idFilm: idFilm })
-    }
-
   render() {
     this._loadFridge()
+    const FirstRoute = () => (
+      <View style={styles.fridge_container}>
+      <FlatList
+        //data={this.state.fridge}
+        data = {d}
+        keyExtractor={(item) => item._id.toString()}
+        renderItem={({item}) => <IngredientItem ingredient={item} />}
+        />
+        <View style={styles.add_icon}>
+        <TouchableOpacity  onPress= {this.showDialog}>
+
+        <Image
+          style={styles.image}
+          source={require( '../Image/icon_add.png')}
+        />
+        </TouchableOpacity>
+
+        <Dialog.Container visible={this.state.visible}>
+          <Dialog.Title>Add to Fridge</Dialog.Title>
+            <Dialog.Description>
+              Type the new ingredient
+              </Dialog.Description>
+              <Dialog.Input
+      placeholder='Ingredient name'
+      onChangeText={(text) => this._newIngredientTextInputChanged(text)}
+      onSubmitEditing={() => this._AddIngredient() }/>
+            <Dialog.Button label="Cancel" onPress={this.handleCancel} />
+            <Dialog.Button label="Add" onPress={this._AddIngredient} />
+        </Dialog.Container>
+      </View>
+      </View>
+    );
+
+    const SecondRoute = () => (
+      <View style={[styles.fridge_container, { backgroundColor: '#673ab7' }]} />
+    );
+
     const { navigate } = this.props.navigation;
     return (
 
       <View style={styles.main_container}>
-        <View style={styles.fridge_container}>
-          <FlatList
-            data={this.state.fridge}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({item}) => <IngredientItem ingredient={item} />}
-            />
-
-            <View style={styles.add_icon}>
-            <TouchableOpacity  onPress= {this.showDialog}>
-
-            <Image
-              style={styles.image}
-              source={require( '../Image/icon_add.png')}
-            />
-            </TouchableOpacity>
-            <Dialog.Container visible={this.state.visible}>
-              <Dialog.Title>Add to Fridge</Dialog.Title>
-                <Dialog.Description>
-                  Do you want to delete this account? You cannot undo this action.
-                  </Dialog.Description>
-                  <Dialog.Input
-          placeholder='Ingredient name'
-          onChangeText={(text) => this._newIngredientTextInputChanged(text)}
-          onSubmitEditing={() => this._AddIngredient() }/>
-                <Dialog.Button label="Cancel" onPress={this.handleCancel} />
-                <Dialog.Button label="Add" onPress={this._AddIngredient} />
-            </Dialog.Container>
-
-            </View>
-        </View>
-
-
+      <TabView
+      style={styles.fridge_container}
+    navigationState={this.state}
+    renderScene={SceneMap({
+      first: FirstRoute,
+      second: SecondRoute,
+    })}
+    onIndexChange={index => this.setState({ index })}
+    initialLayout={{ width: Dimensions.get('window').width }}
+    />
 
         <View style = {styles.panel_menu_container}>
         <TouchableOpacity style={styles.scanner_container} onPress={() =>  navigate('Maps')}>
@@ -126,6 +144,7 @@ this.setState({ visible: false });
 const styles = StyleSheet.create({
   main_container: {
     flex: 1,
+
   },
   fridge_container:{
     flex:5
