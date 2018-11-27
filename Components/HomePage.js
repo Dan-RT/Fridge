@@ -5,9 +5,11 @@ import { StyleSheet, View, Text, FlatList, Button, TouchableOpacity, Image, Text
 import { getFilmsFromApiWithSearchedText } from '../API/TMDBApi' // import { } from ... car c'est un export nommé dans TMDBApi.js
 import films from '../Helpers/filmsData'
 import IngredientItem from './IngredientItem'
+import ShopListItem from './ShopListItem'
 import { getFridgeFromApi, postIngredientToApi } from '../API/FoodAPI'
 import Dialog from "react-native-dialog";
 import d from "../testJson/test.json";
+import d2 from "../testJson/testShopList.json";
 import { TabView, TabBar, SceneMap,PagerPan } from 'react-native-tab-view'
 
 class HomePage extends React.Component {
@@ -96,7 +98,29 @@ this.setState({ visible: false });
     );
 
     const SecondRoute = () => (
-      <View style={[styles.fridge_container, { backgroundColor: '#673ab7' }]} />
+      <View style={styles.fridge_container}>
+      <FlatList
+        //data={this.state.fridge}
+        data = {d2}
+        keyExtractor={(item) => item._id.toString()}
+        renderItem={({item}) => <ShopListItem ingredient={item} />}
+        />
+        <View style={styles.add_icon}>
+
+        <Dialog.Container visible={this.state.visible}>
+          <Dialog.Title>Add to Fridge</Dialog.Title>
+            <Dialog.Description>
+              Type the new ingredient
+              </Dialog.Description>
+              <Dialog.Input
+      placeholder='Ingredient name'
+      onChangeText={(text) => this._newIngredientTextInputChanged(text)}
+      onSubmitEditing={() => this._AddIngredient() }/>
+            <Dialog.Button label="Cancel" onPress={this.handleCancel} />
+            <Dialog.Button label="Add" onPress={this._AddIngredient} />
+        </Dialog.Container>
+      </View>
+      </View>
     );
 
     const { navigate } = this.props.navigation;
@@ -104,7 +128,7 @@ this.setState({ visible: false });
 
       <View style={styles.main_container}>
       <TabView
-      style={styles.fridge_container}
+      style={styles.fridge_container }
     navigationState={this.state}
     renderScene={SceneMap({
       first: FirstRoute,
@@ -114,27 +138,6 @@ this.setState({ visible: false });
     initialLayout={{ width: Dimensions.get('window').width }}
     />
 
-        <View style = {styles.panel_menu_container}>
-        <TouchableOpacity style={styles.scanner_container} onPress={() =>  navigate('Maps')}>
-        <Image
-          style={styles.image}
-          source={require( '../Image/icon_maps.png')}
-        />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.scanner_container} onPress={() => navigate('ScanTemporaire')}>
-          <Image
-            style={styles.image}
-            source={require( '../Image/icon_bar_code.png')}
-          />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.scanner_container} onPress={() =>  navigate('SearchRecipes')}>
-          <Image
-            style={styles.image}
-            source={require( '../Image/icon_recipe.png')}
-          />
-
-        </TouchableOpacity>
-        </View>
 
       </View>
     )
@@ -147,7 +150,8 @@ const styles = StyleSheet.create({
 
   },
   fridge_container:{
-    flex:5
+    flex:5,
+    marginTop:22
   },
   scanner_container:{
     flex: 1

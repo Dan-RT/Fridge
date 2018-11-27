@@ -11,31 +11,13 @@ class IngredientItem extends React.Component {
       super(props)
       this.state = {
         //fridge: [],
-        visible: false,
-        visible2: false
+        visible: false
       }
     }
-
-AddIngredientToShopList()
-{
-  console.log("Adding it")
-}
-
-DeleteIngredient()
-{
-  console.log("Deleting it")
-}
-
-DeleteAndAdd = () => {
-  this.setState({ visible: false })
-  this.setState({ visible2: false })
-      console.log("Deleting and add it")
-      }
 
 
 Delete = () => {
     this.setState({ visible: false })
-    this.setState({ visible2: false })
     console.log("Deleting it")
   }
 
@@ -44,32 +26,23 @@ handleCancel = () => {
     console.log("Cancel it")
   }
 
-  handleCancelDialog2 = () => {
-      this.setState({ visible2: false })
-      console.log("Cancel it")
-    }
 
-AddToShopList = () => {
-  this.setState({ visible: false })
-  this.setState({ visible2: false })
-        console.log("add it")
-    }
 ShowShopListDialog = () => {
-      this.setState({ visible2: true })
+      this.setState({ visible: true })
         console.log("shop list dialog")
     }
 
   render() {
     var swipeoutBtnsRight = [
     {
-      text: 'Modify',
-      backgroundColor: '#2196f3',
+      text: 'Delete',
+      backgroundColor: 'red',
       onPress: () => {this.setState({ visible: true })}
     }
     ]
     const { ingredient} = this.props
     return (
-      <Swipeout left = {swipeoutBtnsRight} autoClose = {true}>
+      <Swipeout right = {swipeoutBtnsRight} autoClose = {true}>
       <View style={styles.main_container}>
             <Text style={styles.description_text}>{ingredient.name}</Text>
             <Dialog.Container visible={this.state.visible}>
@@ -78,18 +51,7 @@ ShowShopListDialog = () => {
                   What do you want to do to this ingredient?
                   </Dialog.Description>
                 <Dialog.Button label="Cancel" onPress={this.handleCancel} />
-                <Dialog.Button label="Shop list" onPress={this.ShowShopListDialog} />
                 <Dialog.Button label="Delete it" onPress={this.Delete} />
-            </Dialog.Container>
-
-            <Dialog.Container visible={this.state.visible2}>
-              <Dialog.Title>Add to Fridge</Dialog.Title>
-                <Dialog.Description>
-                  Do you want to delete this ingredient before adding it to the shop list?
-                  </Dialog.Description>
-                <Dialog.Button label="Cancel" onPress={this.handleCancelDialog2} />
-                <Dialog.Button label="Yes" onPress={this.DeleteAndAdd} />
-                <Dialog.Button label="No" onPress={this.AddToShopList} />
             </Dialog.Container>
 
       </View>

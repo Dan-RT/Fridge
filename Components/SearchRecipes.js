@@ -1,8 +1,10 @@
 import React from 'react'
-import { StyleSheet, View, TextInput, Button, Text, FlatList, ActivityIndicator } from 'react-native'
+import { StyleSheet, View, TextInput, Text, FlatList, ActivityIndicator } from 'react-native'
 import RecipeItem from './RecipeItem'
-import { getRecipesFromApiWithSearchedText } from '../API/FoodAPI'
+import { SearchBar, Button } from 'react-native-elements'
 
+import { getRecipesFromApiWithSearchedText } from '../API/FoodAPI'
+import d from "../testJson/testRecipe.json";
 class SearchRecipe extends React.Component {
 
   constructor(props) {
@@ -23,7 +25,10 @@ class SearchRecipe extends React.Component {
   _loadRecipes() {
     if (this.searchedText.length > 0) {
       this.setState({ isLoading: true })
-      getRecipesFromApiWithSearchedText(this.searchedText).then(data => {
+      this.setState({recipes: d, isLoading: false,
+      hasfailed: false})
+      console.log(this.state.recipes)
+      /*getRecipesFromApiWithSearchedText(this.searchedText).then(data => {
           console.log("AFTER getRecipesFromApiWithSearchedText");
           console.log(data);
           this.setState({
@@ -40,8 +45,9 @@ class SearchRecipe extends React.Component {
         })
         console.log(error);
       });
-    }
+    }*/
   }
+}
 
   _searchTextInputChanged(text) {
     this.searchedText = text
@@ -71,14 +77,31 @@ class SearchRecipe extends React.Component {
 
   render() {
     return (
-      <View style={styles.main_container}>
-        <TextInput
+      <View  style={styles.main_container}>
+        <SearchBar
+          lightTheme
+          cancelIcon={{ type: 'font-awesome', name: 'chevron-left' }}
           style={styles.textinput}
           placeholder='Recipe title'
           onChangeText={(text) => this._searchTextInputChanged(text)}
           onSubmitEditing={() => this._loadRecipes()}
         />
-        <Button style={{ height: 50 }} title='Search Food' onPress={() => this._loadRecipes()}/>
+        <Button
+  title="Search Recipe"
+  loading={this.state.isLoading}
+  loadingProps={{ size: "large", color: "rgba(111, 202, 186, 1)" }}
+  titleStyle={{ fontWeight: "700" }}
+  buttonStyle={{
+    backgroundColor: "#2196f3",
+    width: 300,
+    height: 45,
+    borderColor: "transparent",
+    borderWidth: 0,
+    borderRadius: 5,
+    justifyContent: 'center'
+  }}
+  onPress={() => this._loadRecipes()}
+/>
         <FlatList
           data={this.state.recipes}
           keyExtractor={(item) => item._id.toString()}
@@ -87,19 +110,20 @@ class SearchRecipe extends React.Component {
         />
         {this._displayLoading()}
         {this._displayFailMessage()}
-      </View>
+        </View>
     )
   }
 }
 
 const styles = StyleSheet.create({
   main_container: {
-    flex: 1
+    flex: 1,
+    marginTop: 22
   },
   textinput: {
     marginLeft: 5,
     marginRight: 5,
-    height: 50,
+    height: 120,
     borderColor: '#000000',
     borderWidth: 1,
     paddingLeft: 5
@@ -113,6 +137,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   }
+
 })
 
 export default SearchRecipe
