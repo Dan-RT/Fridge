@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Image, TouchableOpacity } from 'react-native'
 import { getRecipesFromApiWithSearchedText } from '../API/FoodAPI'
 
+
 class RecipeDetails extends React.Component {
   constructor(props) {
     super(props)

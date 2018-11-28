@@ -135,7 +135,7 @@ this.setState({ visible: false });
       second: SecondRoute,
     })}
     onIndexChange={index => this.setState({ index })}
-    initialLayout={{ width: Dimensions.get('window').width }}
+    initialLayout={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
     />
 
 
@@ -151,7 +151,6 @@ const styles = StyleSheet.create({
   },
   fridge_container:{
     flex:5,
-    marginTop:22
   },
   scanner_container:{
     flex: 1

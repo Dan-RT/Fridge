@@ -7,14 +7,7 @@ import Maps from '../Components/Maps'
 import React from 'react'
 import { Image} from 'react-native'
 
-const SearchStackNavigator = createStackNavigator({
-  RecipeDetails: {
-    screen: RecipeDetails,
-    navigationOptions: {
-        title: 'Details'
-    }
-  }
-})
+
 
 const BottomNavigator = createBottomTabNavigator({
   HomePage: {
@@ -59,4 +52,20 @@ const BottomNavigator = createBottomTabNavigator({
 }
 
 )
-export default createStackNavigator({ BottomNavigator }, { headerMode: "none" });
+
+const SearchStackNavigator = createStackNavigator({
+  HomePage: {
+    screen: BottomNavigator,
+    navigationOptions: {
+      title: 'Your Fridge'
+    }
+  },
+  RecipeDetails: {
+    screen: RecipeDetails,
+    navigationOptions: {
+        title: 'Details'
+    }
+  }
+})
+
+export default SearchStackNavigator

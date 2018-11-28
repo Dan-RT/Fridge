@@ -19,7 +19,7 @@ class SearchRecipe extends React.Component {
 
   _displayDetailForRecipe = (idRecipe) => {
       console.log("Display recipe with id " + idRecipe)
-      this.props.navigation.navigate("RecipeDetail", { idRecipe: idRecipe })
+      this.props.navigation.navigate("RecipeDetails", { idRecipe: idRecipe })
   }
 
   _loadRecipes() {
@@ -117,8 +117,7 @@ class SearchRecipe extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    flex: 1,
-    marginTop: 22
+    flex: 1
   },
   textinput: {
     marginLeft: 5,

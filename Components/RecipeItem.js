@@ -14,9 +14,6 @@ class RecipeItem extends React.Component {
   render() {
     const { recipe, displayDetailForRecipe } = this.props
 
-console.log("recipe.ingredients")
-  console.log(recipe.ingredients)
-  console.log("reciperrrr")
     return (
 
       <TouchableOpacity style={styles.main_container} onPress={() => displayDetailForRecipe(recipe._id)}>
