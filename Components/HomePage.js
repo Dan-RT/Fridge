@@ -1,111 +1,143 @@
 // Components/FilmDetail.js
 
 import React from 'react'
-import { StyleSheet, View, Text, FlatList, Button, TouchableOpacity, Image, TextInput } from 'react-native'
+import { StyleSheet, View, Text, FlatList, Button, TouchableOpacity, Image, TextInput, Dimensions  } from 'react-native'
 import { getFilmsFromApiWithSearchedText } from '../API/TMDBApi' // import { } from ... car c'est un export nommé dans TMDBApi.js
 import films from '../Helpers/filmsData'
-import FilmItem from './FilmItem'
-import Dialog, { DialogContent } from 'react-native-popup-dialog';
+import IngredientItem from './IngredientItem'
+import ShopListItem from './ShopListItem'
+import { getFridgeFromApi, postIngredientToApi } from '../API/FoodAPI'
+import Dialog from "react-native-dialog";
+import d from "../testJson/test.json";
+import d2 from "../testJson/testShopList.json";
+import { TabView, TabBar, SceneMap,PagerPan } from 'react-native-tab-view'
 
 class HomePage extends React.Component {
 
   constructor(props) {
       super(props)
       this.newIngredientText = ""
+      this.fridge = d
       this.state = {
-        films: [],
+        //fridge: [],
+        visible: false,
+        index: 0,
+        routes: [
+          { key: 'first', title: 'Your fridge' },
+          { key: 'second', title: 'Your shop list' },
+        ]
       }
-      // Ici on va créer les propriétés de notre component custom Search
     }
+
 
     _newIngredientTextInputChanged(text) {
       this.newIngredientText = text
     }
 
+
   _loadFridge() {
-      getFilmsFromApiWithSearchedText("Harry").then(data => {
+      /*getFridgeFromApi("1594276916").then(data => {
           this.setState({
-            films: data.results
-          })
-      })
+            fridge: data.results
+          });
+
+      });*/
+
+
+
     }
 
-    _AddIngredient(){
+    _AddIngredient = () => {
       console.log(this.newIngredientText);
-      this.newIngredientText = ""
+      this.newIngredientText = "";
+      postIngredientToApi("1594276916");
       this.setState({ visible: false })
     }
 
-    _displayDetailForFilm = (idFilm) => {
-      this.props.navigation.navigate("FilmDetail",  { idFilm: idFilm })
-    }
+    showDialog = () => {
+  this.setState({ visible: true });
+};
+
+handleCancel = () => {
+this.setState({ visible: false });
+};
+
   render() {
     this._loadFridge()
+    const FirstRoute = () => (
+      <View style={styles.fridge_container}>
+      <FlatList
+        //data={this.state.fridge}
+        data = {d}
+        keyExtractor={(item) => item._id.toString()}
+        renderItem={({item}) => <IngredientItem ingredient={item} />}
+        />
+        <View style={styles.add_icon}>
+        <TouchableOpacity  onPress= {this.showDialog}>
+
+        <Image
+          style={styles.image}
+          source={require( '../Image/icon_add.png')}
+        />
+        </TouchableOpacity>
+
+        <Dialog.Container visible={this.state.visible}>
+          <Dialog.Title>Add to Fridge</Dialog.Title>
+            <Dialog.Description>
+              Type the new ingredient
+              </Dialog.Description>
+              <Dialog.Input
+      placeholder='Ingredient name'
+      onChangeText={(text) => this._newIngredientTextInputChanged(text)}
+      onSubmitEditing={() => this._AddIngredient() }/>
+            <Dialog.Button label="Cancel" onPress={this.handleCancel} />
+            <Dialog.Button label="Add" onPress={this._AddIngredient} />
+        </Dialog.Container>
+      </View>
+      </View>
+    );
+
+    const SecondRoute = () => (
+      <View style={styles.fridge_container}>
+      <FlatList
+        //data={this.state.fridge}
+        data = {d2}
+        keyExtractor={(item) => item._id.toString()}
+        renderItem={({item}) => <ShopListItem ingredient={item} />}
+        />
+        <View style={styles.add_icon}>
+
+        <Dialog.Container visible={this.state.visible}>
+          <Dialog.Title>Add to Fridge</Dialog.Title>
+            <Dialog.Description>
+              Type the new ingredient
+              </Dialog.Description>
+              <Dialog.Input
+      placeholder='Ingredient name'
+      onChangeText={(text) => this._newIngredientTextInputChanged(text)}
+      onSubmitEditing={() => this._AddIngredient() }/>
+            <Dialog.Button label="Cancel" onPress={this.handleCancel} />
+            <Dialog.Button label="Add" onPress={this._AddIngredient} />
+        </Dialog.Container>
+      </View>
+      </View>
+    );
+
     const { navigate } = this.props.navigation;
     return (
 
       <View style={styles.main_container}>
-        <View style={styles.fridge_container}>
-          <FlatList
-            data={this.state.films}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({item}) => <FilmItem film={item} displayDetailForFilm={this._displayDetailForFilm} />}
-            />
-            <View style={styles.add_icon}>
-            <TouchableOpacity  onPress={() => {this.setState({ visible: true });}}>
+      <TabView
+      style={styles.fridge_container }
+    navigationState={this.state}
+    renderScene={SceneMap({
+      first: FirstRoute,
+      second: SecondRoute,
+    })}
+    onIndexChange={index => this.setState({ index })}
+    initialLayout={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
+    />
 
-            <Image
-              style={styles.image}
-              source={require( '../Image/icon_add.png')}
-            />
-            </TouchableOpacity>
-            <Dialog
-        visible={this.state.visible}
-          onTouchOutside={() => {
-          this.setState({ visible: false });
-        }}
-      >
-      <DialogContent style = {styles.dialog_Content}>
-      <View style={{margin: 30}}>
-        <TextInput
-          style={styles.textinput}
-          placeholder='Ingredient name'
-          onChangeText={(text) => this._newIngredientTextInputChanged(text)}
-          onSubmitEditing={() => this._AddIngredient() }
-
-        />
-        <Button style={{ height: 50 }} title='Summit ingredient' onPress={() => this._AddIngredient()}/>
-      </View>
-   </DialogContent>
-       </Dialog>
-
-
-            </View>
-        </View>
-
-
-
-        <View style = {styles.panel_menu_container}>
-        <TouchableOpacity style={styles.scanner_container} onPress={() =>  navigate('Maps')}>
-        <Image
-          style={styles.image}
-          source={require( '../Image/icon_maps.png')}
-        />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.scanner_container} onPress={() => navigate('ScanTemporaire')}>
-          <Image
-            style={styles.image}
-            source={require( '../Image/icon_bar_code.png')}
-          />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.scanner_container} onPress={() =>  navigate('SearchRecipes')}>
-          <Image
-            style={styles.image}
-            source={require( '../Image/icon_recipe.png')}
-          />
-
-        </TouchableOpacity>
-        </View>
 
       </View>
     )
@@ -115,9 +147,10 @@ class HomePage extends React.Component {
 const styles = StyleSheet.create({
   main_container: {
     flex: 1,
+
   },
   fridge_container:{
-    flex:5
+    flex:5,
   },
   scanner_container:{
     flex: 1
