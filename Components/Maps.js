@@ -1,19 +1,20 @@
 // Components/Maps.js
 
 import React from 'react'
-import { StyleSheet, View, Text } from 'react-native'
-import MapView from 'react-native-maps'
+import { StyleSheet, View, Text, Button } from 'react-native'
+import MapView, {Marker, Callout} from 'react-native-maps'
+import openMap from 'react-native-open-maps'
 import { getSupermarket } from '../API/PlacesAPI'
 
 class Maps extends React.Component {
-    constructor(props) {
+  constructor(props) {
     super(props);
 
     this.supermarkets = []
     this.state = {
       userPosition: {
-        latitude: 0,                        //Check life cycle of Component
-        longitude: 0,
+        latitude: 48.8583701,
+        longitude: 2.2922926,
         latitudeDelta: 0.0622,
         longitudeDelta: 0.0421,
       },
@@ -21,56 +22,83 @@ class Maps extends React.Component {
     };
   }
 
-  _getLocation(){
+  componentDidMount() {
+    console.log("TEST componentDidMount");
+    //this._getLocation(() => this._getNearSupermarket());
+    this._getLocation(this._getNearSupermarket);
+  }
+
+  _getLocation(callback){
+    console.log("GET LOCATION");
     navigator.geolocation.getCurrentPosition(
       (position) => {
         this.setState({
           userPosition: {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-            latitudeDelta: 0.0622,
-            longitudeDelta: 0.0421,
+            latitudeDelta: 0.0322,
+            longitudeDelta: 0.0221,
           },
           error: null,
         });
+        console.log("LOCATION LATITUDE : " + this.state.userPosition.latitude + "\n LOCATION LONGITUDE : " + this.state.userPosition.longitude);
+        callback(this.state.userPosition.latitude, this.state.userPosition.longitude);
       },
       (error) => this.setState({ error: error.message }),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
-    );
+      { enableHighAccuracy: false, timeout: 20000 },
+    )
   }
 
-  _getNearSupermarket () {
-    getSupermarket(this.state.userPosition.latitude, this.state.userPosition.longitude, 70000, "supermarket").then(data => {
+  _getNearSupermarket (lat, long) {
+    console.log("_getNearSupermarket");
+    //getSupermarket(this.state.userPosition.latitude, this.state.userPosition.longitude, 5000, "supermarket").then(data => {
+    getSupermarket(lat, long, 5000, "supermarket").then(data => {
+      const arrayMarkers = []
       data.results.map((element, i) => {
-        const arrayMarkers = []
         arrayMarkers.push(
-          <MapView.Marker                                         //Change style to make a difference between user and supermarkets
+          <Marker
             key={i}
             coordinate={{
                 latitude: element.geometry.location.lat,
                 longitude: element.geometry.location.lng
             }}
-          />
+            >
+              <Callout onPress={e => this._openMapsApp(e.nativeEvent.coordinate.latitude,e.nativeEvent.coordinate.longitude)}>
+                <View>
+                  <Text>{element.name}</Text>
+                  <Text>Open now: {element.opening_hours.open_now ? "Yes" : "No"}</Text>
+                </View>
+              </Callout>
+            </Marker>
         )
-        this.supermarkets = arrayMarkers
       })
+      this.supermarkets = arrayMarkers
+      //console.log("SUPERMARKETS :"+ this.supermarkets[1].coordinate.latitude)
     })
   }
 
-  render() {
-    this._getLocation()
-    this._getNearSupermarket()
-    return (
+  _openMapsApp(lat,long){
+    console.log("OPEN MAPS : " + lat + " " + long);
+    openMap({ latitude: lat, longitude: long });
+  }
 
+  render() {
+     //this._getLocation()
+     //this._getNearSupermarket();
+    console.log("\n RENDER POSITION ERROR \n" + this.state.error);
+    return (
       <View style={styles.main_container}>
           <MapView
             region={this.state.userPosition}
             style={styles.map}
+            toolbarEnabled={true}
           >
-            <MapView.Marker coordinate={this.state.userPosition} />
+            <Marker coordinate={this.state.userPosition} pinColor={"yellow"}/>
             {this.supermarkets}
+
           </MapView>
       </View>
+
     )
   }
 }

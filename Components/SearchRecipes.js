@@ -1,7 +1,9 @@
 import React from 'react'
-import { StyleSheet, View, TextInput, Button, Text, FlatList, ActivityIndicator } from 'react-native'
+import { StyleSheet, View, TextInput, Text, FlatList, ActivityIndicator } from 'react-native'
 import RecipeItem from './RecipeItem'
+
 import { getRecipesFromApiWithSearchedText } from '../API/FoodAPI'
+import d from "../testJson/testRecipe.json";
 
 class SearchRecipe extends React.Component {
 
@@ -17,13 +19,16 @@ class SearchRecipe extends React.Component {
 
   _displayDetailForRecipe = (idRecipe) => {
       console.log("Display recipe with id " + idRecipe)
-      this.props.navigation.navigate("RecipeDetail", { idRecipe: idRecipe })
+      this.props.navigation.navigate("RecipeDetails", { idRecipe: idRecipe })
   }
 
   _loadRecipes() {
     if (this.searchedText.length > 0) {
       this.setState({ isLoading: true })
-      getRecipesFromApiWithSearchedText(this.searchedText).then(data => {
+      this.setState({recipes: d, isLoading: false,
+      hasfailed: false})
+      console.log(this.state.recipes)
+      /*getRecipesFromApiWithSearchedText(this.searchedText).then(data => {
           console.log("AFTER getRecipesFromApiWithSearchedText");
           console.log(data);
           this.setState({
@@ -40,8 +45,9 @@ class SearchRecipe extends React.Component {
         })
         console.log(error);
       });
-    }
+    }*/
   }
+}
 
   _searchTextInputChanged(text) {
     this.searchedText = text
@@ -71,14 +77,7 @@ class SearchRecipe extends React.Component {
 
   render() {
     return (
-      <View style={styles.main_container}>
-        <TextInput
-          style={styles.textinput}
-          placeholder='Recipe title'
-          onChangeText={(text) => this._searchTextInputChanged(text)}
-          onSubmitEditing={() => this._loadRecipes()}
-        />
-        <Button style={{ height: 50 }} title='Search Food' onPress={() => this._loadRecipes()}/>
+      <View  style={styles.main_container}>
         <FlatList
           data={this.state.recipes}
           keyExtractor={(item) => item._id.toString()}
@@ -87,7 +86,7 @@ class SearchRecipe extends React.Component {
         />
         {this._displayLoading()}
         {this._displayFailMessage()}
-      </View>
+        </View>
     )
   }
 }
@@ -99,7 +98,7 @@ const styles = StyleSheet.create({
   textinput: {
     marginLeft: 5,
     marginRight: 5,
-    height: 50,
+    height: 120,
     borderColor: '#000000',
     borderWidth: 1,
     paddingLeft: 5
@@ -113,6 +112,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   }
+
 })
 
 export default SearchRecipe

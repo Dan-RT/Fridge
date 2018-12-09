@@ -5,6 +5,7 @@ export function getSupermarket (latitude, longitude, radius, type){
   const url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + latitude + "," + longitude + "&radius=" + radius +
               "&type=" + type + "&key=" + API_TOKEN
 
+  console.log("URL : " + url);
   return fetch(url)
     .then((response) => response.json())
     .catch((error) => console.error(error))
