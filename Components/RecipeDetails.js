@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Image, TouchableOpacity } from 'react-native'
 import { getRecipesFromApiWithSearchedText } from '../API/FoodAPI'
-
+import d from "../testJson/testRecipe.json";
 
 class RecipeDetails extends React.Component {
   constructor(props) {
@@ -13,14 +13,15 @@ class RecipeDetails extends React.Component {
   }
 
   componentDidMount() {
-    getRecipesFromApiWithSearchedText(this.props.navigation.state.params.idRecipe).then(data => {
+    /*getRecipesFromApiWithSearchedText(this.props.navigation.state.params.idRecipe).then(data => {
       this.setState({
         recipe: data,
         isLoading: false
       })
     }).catch(function(error) {
       throw error;
-    });
+    });*/
+
   }
 
   _displayLoading() {

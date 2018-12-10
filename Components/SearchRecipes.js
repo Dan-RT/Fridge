@@ -1,7 +1,8 @@
 import React from 'react'
-import { StyleSheet, View, TextInput, Text, FlatList, ActivityIndicator } from 'react-native'
+import { StyleSheet,Button, View, TextInput, Text, FlatList, ActivityIndicator, TouchableOpacity, Image } from 'react-native'
 import RecipeItem from './RecipeItem'
-import { SearchBar, Button } from 'react-native-elements'
+import RecipeForm from './RecipeForm'
+import Dialog from "react-native-dialog";
 
 import { getRecipesFromApiWithSearchedText } from '../API/FoodAPI'
 import d from "../testJson/testRecipe.json";
@@ -20,6 +21,10 @@ class SearchRecipe extends React.Component {
   _displayDetailForRecipe = (idRecipe) => {
       console.log("Display recipe with id " + idRecipe)
       this.props.navigation.navigate("RecipeDetails", { idRecipe: idRecipe })
+  }
+
+  _displayForm =() => {
+      this.props.navigation.navigate("RecipeForm")
   }
 
   _loadRecipes() {
@@ -73,14 +78,27 @@ class SearchRecipe extends React.Component {
     }
   }
 
+  _AddIngredient = () => {
+    console.log(this.newIngredientText);
+    this.newIngredientText = "";
+    postIngredientToApi("1594276916");
+    this.setState({ visible: false })
+  }
+
+  showDialog = () => {
+this.setState({ visible: true });
+};
+
+handleCancel = () => {
+this.setState({ visible: false });
+};
+
 
 
   render() {
     return (
       <View  style={styles.main_container}>
-        <SearchBar
-          lightTheme
-          cancelIcon={{ type: 'font-awesome', name: 'chevron-left' }}
+        <TextInput
           style={styles.textinput}
           placeholder='Recipe title'
           onChangeText={(text) => this._searchTextInputChanged(text)}
@@ -88,18 +106,7 @@ class SearchRecipe extends React.Component {
         />
         <Button
   title="Search Recipe"
-  loading={this.state.isLoading}
-  loadingProps={{ size: "large", color: "rgba(111, 202, 186, 1)" }}
-  titleStyle={{ fontWeight: "700" }}
-  buttonStyle={{
-    backgroundColor: "#2196f3",
-    width: 300,
-    height: 45,
-    borderColor: "transparent",
-    borderWidth: 0,
-    borderRadius: 5,
-    justifyContent: 'center'
-  }}
+  style = {styles.button_style}
   onPress={() => this._loadRecipes()}
 />
         <FlatList
@@ -110,6 +117,16 @@ class SearchRecipe extends React.Component {
         />
         {this._displayLoading()}
         {this._displayFailMessage()}
+
+        <View style={styles.add_icon}>
+        <TouchableOpacity  onPress= {this._displayForm}>
+
+        <Image
+          style={styles.image}
+          source={require( '../Image/icon_add.png')}
+        />
+        </TouchableOpacity>
+      </View>
         </View>
     )
   }
@@ -122,7 +139,7 @@ const styles = StyleSheet.create({
   textinput: {
     marginLeft: 5,
     marginRight: 5,
-    height: 120,
+    height: 50,
     borderColor: '#000000',
     borderWidth: 1,
     paddingLeft: 5
@@ -134,6 +151,27 @@ const styles = StyleSheet.create({
     top: 100,
     bottom: 0,
     alignItems: 'center',
+    justifyContent: 'center'
+  },
+  image:{
+    width: 50,
+    height: 50,
+    margin: 15
+  },
+  add_icon:{
+    position : 'absolute',
+      right: 0,
+    bottom: 0,
+    justifyContent: 'flex-end'
+
+  },
+  button_style:{
+    backgroundColor: "#2196f3",
+    width: 300,
+    height: 45,
+    borderColor: "transparent",
+    borderWidth: 0,
+    borderRadius: 5,
     justifyContent: 'center'
   }
 

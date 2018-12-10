@@ -1,5 +1,6 @@
 import { createStackNavigator, createBottomTabNavigator, createAppContainer  } from 'react-navigation'
 import SearchRecipes from '../Components/SearchRecipes'
+import RecipeForm from '../Components/RecipeForm'
 import RecipeDetails from '../Components/RecipeDetails'
 import HomePage from '../Components/HomePage'
 import ScanTemporaire from '../Components/ScanTemporaire'
@@ -64,6 +65,13 @@ const SearchStackNavigator = createStackNavigator({
     screen: RecipeDetails,
     navigationOptions: {
         title: 'Details'
+    }
+  },
+
+  RecipeForm: {
+    screen: RecipeForm,
+    navigationOptions: {
+        title: 'Recipe Form'
     }
   }
 })
