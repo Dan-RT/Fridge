@@ -1,0 +1,146 @@
+[
+    {
+        "keywords": [
+            "tomato",
+            "sauce",
+            "bolognaise",
+            "provençale"
+        ],
+        "_id": "5bf38edd5d9abd2e943d6f0d",
+        "name": "Tomato Sauce",
+        "typeDish": "plat",
+        "typeMeal": "lunch",
+        "weight": 100,
+        "quantity": 1,
+        "barCode": 12367245,
+        "__v": 0
+    },
+    {
+        "keywords": [
+            "tomato",
+            "sauce",
+            "bolognaise",
+            "provençale"
+        ],
+        "_id": "5bf38ede5d9abd2e943d6f0h",
+        "name": "Pesto sauce",
+        "typeDish": "plat",
+        "typeMeal": "lunch",
+        "weight": 100,
+        "quantity": 1,
+        "barCode": 12360995,
+        "__v": 0
+    },
+
+    {
+        "keywords": [
+            "tomato",
+            "sauce",
+            "bolognaise",
+            "provençale"
+        ],
+        "_id": "5bf38ede5d9abd2e943d6f0b",
+        "name": "Pasta",
+        "typeDish": "plat",
+        "typeMeal": "lunch",
+        "weight": 100,
+        "quantity": 1,
+        "__v": 0
+    },
+
+    {
+        "keywords": [
+            "tomato",
+            "sauce",
+            "bolognaise",
+            "provençale"
+        ],
+        "_id": "5bf38ede5d9abd2e943d6f0z",
+        "name": "Afredo sauce",
+        "typeDish": "plat",
+        "typeMeal": "lunch",
+        "weight": 100,
+        "quantity": 1,
+        "__v": 0
+    },
+
+    {
+        "keywords": [
+            "tomato",
+            "sauce",
+            "bolognaise",
+            "provençale"
+        ],
+        "_id": "5bf38ede5d9abd2e943d6f0u",
+        "name": "Curry",
+        "typeDish": "plat",
+        "typeMeal": "lunch",
+        "weight": 100,
+        "quantity": 1,
+        "__v": 0
+    },
+
+    {
+        "keywords": [
+            "tomato",
+            "sauce",
+            "bolognaise",
+            "provençale"
+        ],
+        "_id": "5bf38ede5d9abd2e943d6f0y",
+        "name": "Soya sauce",
+        "typeDish": "plat",
+        "typeMeal": "lunch",
+        "weight": 100,
+        "quantity": 1,
+        "__v": 0
+    },
+
+    {
+        "keywords": [
+            "tomato",
+            "sauce",
+            "bolognaise",
+            "provençale"
+        ],
+        "_id": "5bf38ede5d9abd2e943d6f0t",
+        "name": "Gnocchi",
+        "typeDish": "plat",
+        "typeMeal": "lunch",
+        "weight": 100,
+        "quantity": 1,
+        "__v": 0
+    },
+
+    {
+        "keywords": [
+            "tomato",
+            "sauce",
+            "bolognaise",
+            "provençale"
+        ],
+        "_id": "5bf38ede5d9abd2e943d6f0r",
+        "name": "Rice",
+        "typeDish": "plat",
+        "typeMeal": "lunch",
+        "weight": 100,
+        "quantity": 1,
+        "__v": 0
+    },
+
+    {
+        "keywords": [
+            "tomato",
+            "sauce",
+            "bolognaise",
+            "provençale"
+        ],
+        "_id": "5bf38ede5d9abd2e943d6f0a",
+        "name": "Eggs",
+        "typeDish": "plat",
+        "typeMeal": "lunch",
+        "weight": 100,
+        "quantity": 1,
+        "__v": 0
+    }
+]
